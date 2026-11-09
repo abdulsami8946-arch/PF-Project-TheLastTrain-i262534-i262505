@@ -47,5 +47,5 @@ int main() {
                   inventory, inventoryCount, objectives, emergencyTripsLeft,
                   horizontalConn, roomEntities, entityCounts);
     return 0;
-    //hello
+
 }
