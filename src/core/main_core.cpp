@@ -3,7 +3,6 @@
 #include "logger.h"
 #include "viewer_iface.h"
 #include <iostream>
-using namespace std;
 
 int main() {
     // Player State Primitives
@@ -46,6 +45,5 @@ int main() {
     runSimulation(playerFloor, playerRoom, energy, time, score,
                   inventory, inventoryCount, objectives, emergencyTripsLeft,
                   horizontalConn, roomEntities, entityCounts);
-cout<<"sohail";
     return 0;
 }
