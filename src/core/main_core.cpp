@@ -9,6 +9,7 @@ int main() {
     int playerFloor = 1;
     int playerRoom = 1;
     int energy = INITIAL_ENERGY;
+
     int time = INITIAL_TIME;
     int score = INITIAL_SCORE;
     
@@ -46,4 +47,5 @@ int main() {
                   inventory, inventoryCount, objectives, emergencyTripsLeft,
                   horizontalConn, roomEntities, entityCounts);
     return 0;
+    //hello
 }
