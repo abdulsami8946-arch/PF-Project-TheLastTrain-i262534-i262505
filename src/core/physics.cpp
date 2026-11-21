@@ -87,7 +87,6 @@ bool isDirectlyConnected(int fromF, int fromR, int toF, int toR,
 
     if(outConnType == CONN_NONE)
         return false;
-
     return true;
 }
 bool canTraverse(int targetFloor, int targetRoom, char connType,
