@@ -147,6 +147,161 @@ for(int f = 0; f < NUM_FLOORS; f++)
 }
     return true;
 }
+bool loadInitialState(const char* filename,
+                      int& playerFloor, int& playerRoom,
+                      int& energy, int& time, int& score,
+                      char inventory[MAX_INVENTORY_CAPACITY], int& inventoryCount,
+                      bool objectives[NUM_OBJECTIVES], int& emergencyTripsLeft)
+{
+    ifstream file(filename);
+
+    if(!file)
+        return false;
+
+    playerFloor = 0;
+    playerRoom = 0;
+
+    energy = INITIAL_ENERGY;
+    time = INITIAL_TIME;
+    score = INITIAL_SCORE;
+
+    inventoryCount = 0;
+    emergencyTripsLeft = 0;
+
+    for(int i = 0; i < MAX_INVENTORY_CAPACITY; i++)
+        inventory[i] = ENT_NONE;
+
+    for(int i = 0; i < NUM_OBJECTIVES; i++)
+        objectives[i] = false;
+
+    char line[MAX_LINE_LEN];
+
+    while(file.getline(line, MAX_LINE_LEN))
+    {
+        char* colon = strchr(line, ':');
+
+        if(colon == NULL)
+            continue;
+
+        *colon = '\0';
+
+        char* value = colon + 1;
+
+        while(*value == ' ' || *value == '\t')
+            value++;
+
+        int len = strlen(value);
+
+        while(len > 0 && (value[len - 1] == ' ' || value[len - 1] == '\r'))
+        {
+            value[len - 1] = '\0';
+            len--;
+        }
+
+        if(strcmp(line, "INITIAL_ENERGY") == 0)
+        {
+            energy = 0;
+
+            for(int i = 0; value[i] >= '0' && value[i] <= '9'; i++)
+                energy = energy * 10 + (value[i] - '0');
+        }
+
+        else if(strcmp(line, "INITIAL_TIME") == 0)
+        {
+            time = 0;
+
+            for(int i = 0; value[i] >= '0' && value[i] <= '9'; i++)
+                time = time * 10 + (value[i] - '0');
+        }
+
+        else if(strcmp(line, "INITIAL_SCORE") == 0)
+        {
+            score = 0;
+
+            for(int i = 0; value[i] >= '0' && value[i] <= '9'; i++)
+                score = score * 10 + (value[i] - '0');
+        }
+
+        else if(strcmp(line, "INITIAL_INVENTORY") == 0)
+        {
+            if(strcmp(value, "NONE") == 0)
+                inventoryCount = 0;
+        }
+
+        else if(strcmp(line, "PASSENGER_RESCUED") == 0)
+            objectives[OBJ_PASSENGER_RESCUED] = (strcmp(value, "YES") == 0);
+
+        else if(strcmp(line, "CAT_RESCUED") == 0)
+            objectives[OBJ_CAT_SECURED] = (strcmp(value, "YES") == 0);
+
+        else if(strcmp(line, "CLUES_COLLECTED") == 0)
+        {
+            if(strcmp(value, "NONE") == 0)
+            {
+                objectives[OBJ_CLUE_4] = false;
+                objectives[OBJ_CLUE_2] = false;
+                objectives[OBJ_CLUE_7] = false;
+            }
+        }
+
+        else if(strcmp(line, "CABINET_UNLOCKED") == 0)
+            objectives[OBJ_CABINET_UNLOCKED] = (strcmp(value, "YES") == 0);
+
+        else if(strcmp(line, "TRAIN_KEY_COLLECTED") == 0)
+            objectives[OBJ_TRAIN_KEY] = (strcmp(value, "YES") == 0);
+
+        else if(strcmp(line, "FUSE_INSTALLED") == 0)
+            objectives[OBJ_FUSE_INSTALLED] = (strcmp(value, "YES") == 0);
+
+        else if(strcmp(line, "LIFT_PASS_COLLECTED") == 0)
+            objectives[OBJ_LIFT_PASS] = (strcmp(value, "YES") == 0);
+
+        else if(strcmp(line, "TRAIN_PREPARED") == 0)
+            objectives[OBJ_TRAIN_PREPARED] = (strcmp(value, "YES") == 0);
+    }
+
+    file.close();
+
+    return true;
+}
+bool validateStartingRoom(int startFloor, int startRoom,
+                          const char horizontalConn[NUM_FLOORS][ROOMS_PER_FLOOR - 1])
+{
+    if(startFloor < 1 || startFloor > NUM_FLOORS ||
+       startRoom < 1 || startRoom > ROOMS_PER_FLOOR)
+    {
+        return false;
+    }
+
+    int f = startFloor - 1;
+    bool hasConnection = false;
+
+    if(startRoom > 1)
+    {
+        char left = horizontalConn[f][startRoom - 2];
+
+        if(left == CONN_DOOR ||
+           left == CONN_WINDOW ||
+           left == CONN_LOCKED_DOOR)
+        {
+            hasConnection = true;
+        }
+    }
+
+    if(startRoom < ROOMS_PER_FLOOR)
+    {
+        char right = horizontalConn[f][startRoom - 1];
+
+        if(right == CONN_DOOR ||
+           right == CONN_WINDOW ||
+           right == CONN_LOCKED_DOOR)
+        {
+            hasConnection = true;
+        }
+    }
+
+    return hasConnection;
+}
 
 
 // Modular implementation using primitive arrays for map parsing and verification
