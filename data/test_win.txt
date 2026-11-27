@@ -1,0 +1,48 @@
+5 1
+inspect
+move 4 1
+move 4 2
+collect %
+collect $
+move 4 1
+use %
+move 5 1
+move 5 2
+move 5 3
+collect @
+move 5 4
+collect &
+move 4 4
+move 4 3
+inspect
+move 4 4
+move 2 4
+move 2 3
+move 1 2
+collect <
+move 1 1
+move 2 1
+move 3 1
+move 3 2
+inspect
+collect *
+move 3 3
+use @
+move 3 4
+use *
+collect (
+move 3 3
+move 3 2
+move 3 1
+move 2 1
+move 1 1
+move 1 2
+move 2 3
+move 2 4
+move 5 4
+move 5 3
+move 5 2
+move 5 1
+unlock 427
+move 5 2
+use ^

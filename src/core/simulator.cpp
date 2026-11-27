@@ -24,6 +24,32 @@ void runSimulation(int& playerFloor, int& playerRoom,
                    char roomEntities[NUM_FLOORS][ROOMS_PER_FLOOR][MAX_ENTITIES_PER_ROOM],
                    int entityCounts[NUM_FLOORS][ROOMS_PER_FLOOR])
     {
+        cout << "\nSELECT YOUR STARTING ROOM\n";
+        do
+            {
+                cout << "Enter floor (1-5): ";
+                cin >> playerFloor;
+
+                cout << "Enter room (1-4): ";
+                cin >> playerRoom;
+
+                if (cin.fail())
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        playerFloor = 0;
+                        playerRoom = 0;
+                        cout << "Invalid input. Please enter numeric values." << endl;
+                    }
+
+
+                if (!validateStartingRoom(playerFloor, playerRoom, horizontalConn))
+                    {
+                        cout << "Invalid starting room. Try again.\n";
+                    }
+            }
+        while (!validateStartingRoom(playerFloor, playerRoom, horizontalConn));
+        
         bool simulationRunning = true;
 
         while (simulationRunning)
@@ -75,6 +101,13 @@ void runSimulation(int& playerFloor, int& playerRoom,
                 cout << "Enter target room: ";
                 cin >> targetRoom;
 
+                if (cin.fail())
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input. Numbers only." << endl;
+                    }
+
                 if (handleMoveCommand(targetFloor, targetRoom, playerFloor, playerRoom, energy, time, horizontalConn,
                                   inventory, inventoryCount, emergencyTripsLeft, objectives[OBJ_LIFT2_ACTIVE]))
                     {
@@ -94,29 +127,6 @@ void runSimulation(int& playerFloor, int& playerRoom,
                 if (handleInspectCommand(playerFloor, playerRoom, energy, time, roomEntities, entityCounts[f][r], objectives, score))
                     {
                         cout << "Room inspected successfully!" << endl;
-
-                    for (int i = 0; i < entityCounts[f][r]; i++)
-                        {
-                            char symbol = roomEntities[f][r][i];
-                            if (symbol == ENT_CLUE_4 && !objectives[OBJ_CLUE_4])
-                                {
-                                    objectives[OBJ_CLUE_4] = true;
-                                    applyScoreDelta(score, 10);
-                                    cout << "Clue digit 4 discovered!" << endl;
-                                }
-                            else if (symbol == ENT_CLUE_2 && !objectives[OBJ_CLUE_2])
-                                {
-                                    objectives[OBJ_CLUE_2] = true;
-                                    applyScoreDelta(score, 10);
-                                    cout << "Clue digit 2 discovered!" << endl;
-                                }
-                            else if (symbol == ENT_CLUE_7 && !objectives[OBJ_CLUE_7])
-                                {
-                                    objectives[OBJ_CLUE_7] = true;
-                                    applyScoreDelta(score, 10);
-                                    cout << "Clue digit 7 discovered!" << endl;
-                                }
-                        }
                     }
                 else
                     {
@@ -168,17 +178,16 @@ void runSimulation(int& playerFloor, int& playerRoom,
 
             else if (command == "unlock")
                 {
-                    char code[4] = "";
+                    string code;
                     cout << "Enter cabinet code: ";
-
-                    cin.width(4);
                     cin >> code;
-            
+
                     int f = playerFloor - 1;
                     int r = playerRoom - 1;
 
-                    if (handleUnlockCabinetCommand(code, playerFloor, playerRoom, objectives, score, roomEntities, entityCounts[f][r]))
+                    if (handleUnlockCabinetCommand(code.c_str(), playerFloor, playerRoom, objectives, score, roomEntities, entityCounts[f][r]))
                         {
+                            applyResourceDelta(energy, time, -1, -1);
                             cout << "Cabinet unlocked successfully!" << endl;
                             cout << "Train Key acquired!" << endl;
                         }
@@ -303,7 +312,7 @@ bool handleMoveCommand(int targetFloor, int targetRoom,
                             validMove = true;
                         }
 // Check Lift 1.
-                else if (canUseLift1(currentFloor, targetFloor) && currentRoom == targetRoom && (currentRoom == 2 || currentRoom == 3))
+                else if (canUseLift1(currentFloor, targetFloor) && (currentRoom == 2 || currentRoom == 3) && (targetRoom == 2 || targetRoom == 3))        
                         {
                             validMove = true;
                             deltaEnergy = -4;
@@ -381,7 +390,27 @@ bool handleInspectCommand(int currentFloor, int currentRoom,
             {
                 for (int i = 0; i < entityCount; i++)
                     {
-                        cout << getEntityName(roomEntities[currentFloor - 1] [currentRoom - 1][i]) << endl;
+                        char symbol = roomEntities[currentFloor - 1][currentRoom - 1][i];
+                        cout << getEntityName(symbol) << endl;
+
+                        if (symbol == ENT_CLUE_4 && !objectives[OBJ_CLUE_4])
+                            {
+                                objectives[OBJ_CLUE_4] = true;
+                                applyScoreDelta(score, 10);
+                                cout << "Clue digit 4 discovered!" << endl;
+                            }
+                        else if (symbol == ENT_CLUE_2 && !objectives[OBJ_CLUE_2])
+                            {
+                                objectives[OBJ_CLUE_2] = true;
+                                applyScoreDelta(score, 10);
+                                cout << "Clue digit 2 discovered!" << endl;
+                            }
+                        else if (symbol == ENT_CLUE_7 && !objectives[OBJ_CLUE_7])
+                            {
+                                objectives[OBJ_CLUE_7] = true;
+                                applyScoreDelta(score, 10);
+                                cout << "Clue digit 7 discovered!" << endl;
+                            }
                     }
             }
         return true;
@@ -543,7 +572,7 @@ bool handleUseCommand(char itemSymbol,
             {
                 return false;
             }
-        if (!hasItem(inventory, inventoryCount, itemSymbol))
+        if (itemSymbol != ENT_CABINET_TRAIN_KEY && !hasItem(inventory, inventoryCount, itemSymbol))
             {
                 return false;
             }
@@ -693,16 +722,16 @@ bool handleUnlockCabinetCommand(const char* code,
 
 bool checkEndConditions(int energy, int time, const bool objectives[NUM_OBJECTIVES])
     {
-        if (energy <= 0 || time <= 0)
-            {
-                cout << "\nMISSION FAILED!" << endl;
-                cout << "Energy or time has run out." << endl;
-                return false;
-            }
         if (objectives[OBJ_MISSION_WON])
             {
                 cout << "\nCONGRATULATIONS!" << endl;
                 cout << "You successfully completed THE LAST TRAIN!" << endl;
+                return false;
+            }
+        if (energy <= 0 || time <= 0)
+            {
+                cout << "\nMISSION FAILED!" << endl;
+                cout << "Energy or time has run out." << endl;
                 return false;
             }
         return true;
