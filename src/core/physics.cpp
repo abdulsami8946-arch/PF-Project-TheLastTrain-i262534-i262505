@@ -90,11 +90,12 @@ bool isDirectlyConnected(int fromF, int fromR, int toF, int toR,
         return false;
     return true;
 }
-bool canTraverse(int targetFloor, int targetRoom, char connType,
+bool canTraverse(int fromFloor, int targetFloor, int targetRoom, char connType,
                  const char inventory[MAX_INVENTORY_CAPACITY], int inventoryCount,
                  int emergencyTripsLeft, bool lift2Operational)
 {
-    if(targetFloor < 1 || targetFloor > NUM_FLOORS ||
+    if(fromFloor < 1 || fromFloor > NUM_FLOORS ||
+       targetFloor < 1 || targetFloor > NUM_FLOORS ||
        targetRoom < 1 || targetRoom > ROOMS_PER_FLOOR)
     {
         return false;
@@ -117,22 +118,30 @@ bool canTraverse(int targetFloor, int targetRoom, char connType,
 
     if(connType == 'S')
     {
-        if(targetRoom == 1)
-            return true;
-
-        return false;
-    }
-
-    if(connType == '1')
-    {
-        if((targetFloor == 1 || targetFloor == 2) &&
-           (targetRoom == 2 || targetRoom == 3))
+        if(targetRoom == 1 &&
+           ((fromFloor == 1 && targetFloor == 2) ||
+            (fromFloor == 2 && targetFloor == 1) ||
+            (fromFloor == 2 && targetFloor == 3) ||
+            (fromFloor == 3 && targetFloor == 2) ||
+            (fromFloor == 4 && targetFloor == 5) ||
+            (fromFloor == 5 && targetFloor == 4)))
         {
             return true;
         }
 
         return false;
     }
+
+    if(connType == '1')
+{
+    if(targetFloor == 1 || targetFloor == 2)
+    {
+        if(targetRoom == 2 || targetRoom == 3)
+            return true;
+    }
+
+    return false;
+}
 
     if(connType == '2')
     {
