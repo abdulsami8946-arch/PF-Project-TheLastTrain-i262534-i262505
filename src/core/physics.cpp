@@ -1,5 +1,6 @@
 #include "physics.h"
 #include "util.h"
+#include "switches.h"
 bool hasItem(const char inventory[MAX_INVENTORY_CAPACITY],int inventoryCount,char itemSymbol){
     for(int i = 0; i < inventoryCount; i++)
     {
@@ -109,7 +110,7 @@ bool canTraverse(int targetFloor, int targetRoom, char connType,
         return true;
 
     if(connType == CONN_LOCKED_DOOR)
-        return hasItem(inventory, inventoryCount, ENT_MASTER_KEY);
+        return unlockFloor3Door(inventory, inventoryCount);
 
     if(connType == CONN_SOLID_WALL)
         return false;
@@ -156,4 +157,3 @@ bool canTraverse(int targetFloor, int targetRoom, char connType,
 
     return false;
 }
-// Movement validation and resource adjustments without structures
