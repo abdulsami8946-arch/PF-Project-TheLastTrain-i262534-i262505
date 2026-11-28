@@ -1,6 +1,6 @@
-#include <cstring>
 #include "switches.h"
 #include "util.h"
+#include "physics.h"
 
 // Door lock mechanics, lifts, and cabinet verification without structures
 
@@ -37,25 +37,15 @@ bool unlockFloor3Door(const char inventory[MAX_INVENTORY_CAPACITY], int inventor
 bool installFuseControlPanel(char inventory[MAX_INVENTORY_CAPACITY], int& inventoryCount,
                              bool objectives[NUM_OBJECTIVES], int& score)
     {
-    const char requiredItem = ENT_FUSE;
-    for (int i = 0; i < inventoryCount; i++)
+    if (!removeItem(inventory, inventoryCount, ENT_FUSE))
         {
-            if (inventory[i] == requiredItem)
-                {
-                // Remove the fuse from inventory
-                for (int j = i; j < inventoryCount - 1; j++)
-                    {
-                    inventory[j] = inventory[j + 1];
-                    }
-                inventoryCount--;
-                // Mark the objective as completed
-                objectives[OBJ_FUSE_INSTALLED] = true; 
-                score += SCORE_INSTALL_FUSE;
-                return true;
-                }
+        return false;
         }
-    return false;
+    objectives[OBJ_FUSE_INSTALLED] = true;
+    applyScoreDelta(score, SCORE_INSTALL_FUSE);
+    return true;
     }
+    
 
 bool verifyCabinetCode(const char* enteredCode, const bool objectives[NUM_OBJECTIVES])
     {
@@ -64,6 +54,8 @@ bool verifyCabinetCode(const char* enteredCode, const bool objectives[NUM_OBJECT
         {
         return false; 
         }
-    return strcmp(enteredCode, correctCode) == 0;
+    
+        return stringEquals(enteredCode, correctCode);
+    
     }
         
