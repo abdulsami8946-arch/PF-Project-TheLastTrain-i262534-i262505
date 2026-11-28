@@ -279,27 +279,13 @@ bool loadInitialState(const char* filename,
         char* value = colon + 1;
 
 
-        // Remove spaces and tabs from the beginning of the value.
-        while(*value == ' ' || *value == '\t')
-        {
-            value++;
-        }
-
-
-        // Find the length of the value.
-        int len = strlen(value);
-
-
-        // Remove unnecessary spaces and carriage returns from the end.
-        while(len > 0 && (value[len - 1] == ' ' || value[len - 1] == '\r'))
-        {
-            value[len - 1] = '\0';
-            len--;
-        }
+        // Remove unnecessary whitespace from the setting name and value.
+        trimWhitespace(line);
+        trimWhitespace(value);
 
 
         // Read the initial energy value.
-        if(strcmp(line, "INITIAL_ENERGY") == 0)
+        if(stringEquals(line, "INITIAL_ENERGY"))
         {
             energy = 0;
 
@@ -311,7 +297,7 @@ bool loadInitialState(const char* filename,
 
 
         // Read the initial time value.
-        else if(strcmp(line, "INITIAL_TIME") == 0)
+        else if(stringEquals(line, "INITIAL_TIME"))
         {
             time = 0;
 
@@ -323,7 +309,7 @@ bool loadInitialState(const char* filename,
 
 
         // Read the initial score value.
-        else if(strcmp(line, "INITIAL_SCORE") == 0)
+        else if(stringEquals(line, "INITIAL_SCORE"))
         {
             score = 0;
 
@@ -335,31 +321,31 @@ bool loadInitialState(const char* filename,
 
 
         // Read the initial inventory.
-        else if(strcmp(line, "INITIAL_INVENTORY") == 0)
+        else if(stringEquals(line, "INITIAL_INVENTORY"))
         {
-            if(strcmp(value, "NONE") == 0)
+            if(stringEquals(value, "NONE"))
                 inventoryCount = 0;
         }
 
 
         // Read the passenger rescue status.
-        else if(strcmp(line, "PASSENGER_RESCUED") == 0)
+        else if(stringEquals(line, "PASSENGER_RESCUED"))
         {
-            objectives[OBJ_PASSENGER_RESCUED] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_PASSENGER_RESCUED] = (stringEquals(value, "YES"));
         }
 
 
         // Read the cat rescue status.
-        else if(strcmp(line, "CAT_RESCUED") == 0)
+        else if(stringEquals(line, "CAT_RESCUED"))
         {
-            objectives[OBJ_CAT_SECURED] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_CAT_SECURED] = (stringEquals(value, "YES"));
         }
 
 
         // Read the collected clues.
-        else if(strcmp(line, "CLUES_COLLECTED") == 0)
+        else if(stringEquals(line, "CLUES_COLLECTED"))
         {
-            if(strcmp(value, "NONE") == 0)
+            if(stringEquals(value, "NONE"))
             {
                 objectives[OBJ_CLUE_4] = false;
                 objectives[OBJ_CLUE_2] = false;
@@ -369,37 +355,37 @@ bool loadInitialState(const char* filename,
 
 
         // Read the cabinet unlock status.
-        else if(strcmp(line, "CABINET_UNLOCKED") == 0)
+        else if(stringEquals(line, "CABINET_UNLOCKED"))
         {
-            objectives[OBJ_CABINET_UNLOCKED] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_CABINET_UNLOCKED] = (stringEquals(value, "YES"));
         }
 
 
         // Read the train key collection status.
-        else if(strcmp(line, "TRAIN_KEY_COLLECTED") == 0)
+        else if(stringEquals(line, "TRAIN_KEY_COLLECTED"))
         {
-            objectives[OBJ_TRAIN_KEY] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_TRAIN_KEY] = (stringEquals(value, "YES"));
         }
 
 
         // Read the fuse installation status.
-        else if(strcmp(line, "FUSE_INSTALLED") == 0)
+        else if(stringEquals(line, "FUSE_INSTALLED"))
         {
-            objectives[OBJ_FUSE_INSTALLED] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_FUSE_INSTALLED] = (stringEquals(value, "YES"));
         }
 
 
         // Read the lift pass collection status.
-        else if(strcmp(line, "LIFT_PASS_COLLECTED") == 0)
+        else if(stringEquals(line, "LIFT_PASS_COLLECTED"))
         {
-            objectives[OBJ_LIFT_PASS] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_LIFT_PASS] = (stringEquals(value, "YES"));
         }
 
 
         // Read the train preparation status.
-        else if(strcmp(line, "TRAIN_PREPARED") == 0)
+        else if(stringEquals(line, "TRAIN_PREPARED"))
         {
-            objectives[OBJ_TRAIN_PREPARED] = (strcmp(value, "YES") == 0);
+            objectives[OBJ_TRAIN_PREPARED] = (stringEquals(value, "YES"));
         }
     }
 
