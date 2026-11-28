@@ -14,7 +14,7 @@ using namespace std;
 
 // Modular simulation loop using primitive variables
 
-// ==================== SIMULATION LOOP ====================
+//SIMULATION LOOP 
 
 void runSimulation(int& playerFloor, int& playerRoom,
                    int& energy, int& time, int& score,
@@ -93,11 +93,10 @@ void runSimulation(int& playerFloor, int& playerRoom,
 
             else if (command == "move")
             {
-                int targetFloor, targetRoom;
+                int targetFloor = 0, targetRoom = 0;
 
                 cout << "Enter target floor: ";
                 cin >> targetFloor;
-
                 cout << "Enter target room: ";
                 cin >> targetRoom;
 
@@ -107,16 +106,15 @@ void runSimulation(int& playerFloor, int& playerRoom,
                         cin.ignore(1000, '\n');
                         cout << "Invalid input. Numbers only." << endl;
                     }
-
-                if (handleMoveCommand(targetFloor, targetRoom, playerFloor, playerRoom, energy, time, horizontalConn,
-                                  inventory, inventoryCount, emergencyTripsLeft, objectives[OBJ_LIFT2_ACTIVE]))
-                    {
-                        cout << "Movement successful!" << endl;
-                    }
+                else if (handleMoveCommand(targetFloor, targetRoom, playerFloor, playerRoom, energy, time, horizontalConn,
+                           inventory, inventoryCount, emergencyTripsLeft, objectives[OBJ_LIFT2_ACTIVE]))
+                        {
+                            cout << "Movement successful!" << endl;
+                        }
                 else
-                {
-                    cout << "Movement failed! Check connectivity or access requirements." << endl;
-                }
+                        {
+                            cout << "Movement failed! Check connectivity or access requirements." << endl;
+                        }
             }
 
             else if (command == "inspect")
@@ -319,8 +317,8 @@ bool handleMoveCommand(int targetFloor, int targetRoom,
                             deltaTime = -3;
                         }
 // Check Lift 2.
-                else if (currentRoom == 4 && targetRoom == 4 && ((currentFloor == 2 || currentFloor == 4 || currentFloor == 5) &&
-                        (targetFloor == 2 || targetFloor == 4 || targetFloor == 5)))
+                else if (currentRoom == 4 && targetRoom == 4 &&
+                         canUseLift2(currentFloor, targetFloor, lift2Operational, emergencyTripsLeft))
                             {
                                 if (lift2Operational)
                                 {
@@ -343,23 +341,23 @@ bool handleMoveCommand(int targetFloor, int targetRoom,
                             }
             }
 
-        if (!validMove)
-            {
-                return false;
-            }
+            if (!validMove)
+                {
+                    return false;
+                }
 // Apply costs only after a valid movement.
 
-        applyResourceDelta(energy, time, deltaEnergy, deltaTime);
+            applyResourceDelta(energy, time, deltaEnergy, deltaTime);
 
-        if (emergencyLiftTrip)
-            {
-                emergencyTripsLeft--;
-            }
+            if (emergencyLiftTrip)
+                {
+                    emergencyTripsLeft--;
+                }
 
-        currentFloor = targetFloor;
-        currentRoom = targetRoom;
+            currentFloor = targetFloor;
+            currentRoom = targetRoom;
 
-        return true;
+            return true;
     }
 
 
@@ -584,15 +582,12 @@ bool handleUseCommand(char itemSymbol,
                     {
                         return false;
                     }   
-                if (!removeItem(inventory, inventoryCount, ENT_FUSE))
+                if (!installFuseControlPanel(inventory, inventoryCount, objectives, score))
                     {
                         return false;
                     }
-
-                objectives[OBJ_FUSE_INSTALLED] = true;
                 objectives[OBJ_LIFT2_ACTIVE] = true;
                 applyResourceDelta(energy, time, -1, -1);
-                applyScoreDelta(score, 20);
 
                 cout << "Fuse installed. Lift 2 is now operational!" << endl;
 

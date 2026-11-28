@@ -8,9 +8,8 @@ void renderDashboard(int playerFloor, int playerRoom, int energy, int time, int 
                      const char inventory[MAX_INVENTORY_CAPACITY], int inventoryCount,
                      int emergencyTripsLeft)
                      {
-                        cout<<"======================"<<endl;
-                        cout<<"=== THE LAST TRAIN ==="<<endl;
-                        cout<<"======================"<<endl;
+                        clearScreen();
+                        printHeader("THE LAST TRAIN");
                         cout<<"Player Floor: "<<playerFloor<<endl;
                         cout<<"Player Room: "<<playerRoom<<endl;
                         cout<<"Energy: "<<energy<<endl;
@@ -43,16 +42,24 @@ void renderRoomDetails(int floor, int room,
                             }
                         cout<<"Room Details for Floor "<<floor<<", Room "<<room<<":"<<endl;
                         cout<<"Entities in the room: ";
-                        for (int i = 0; i < entityCount; i++) 
+                        int shown = 0;
+                        for (int i = 0; i < entityCount; i++)
                             {
-                                cout<<roomEntities[floor-1][room-1][i]<<" ";
+                                char s = roomEntities[floor-1][room-1][i];
+                                if (s == ENT_CLUE_4 || s == ENT_CLUE_2 || s == ENT_CLUE_7)
+                                    {
+                                        continue;   // clues are revealed only by 'inspect'
+                                    }
+                                cout << s << " ";
+                                shown++;
                             }
-                        if (entityCount == 0) 
+                        if (shown == 0)
                             {
-                                cout<<"(empty)";
+                                cout << "(nothing visible)";
                             }
-                        cout<<endl;
+                        cout << endl;
                     }   
+
 void renderAsciiBuilding(int playerFloor, int playerRoom)
                     {
                         cout<<"ASCII Building Representation:"<<endl;
