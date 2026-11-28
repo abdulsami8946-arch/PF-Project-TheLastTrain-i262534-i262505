@@ -1,0 +1,24 @@
+Game Summary Report
+===================
+Final Score: 520
+Remaining Energy: 3
+Remaining Time: 0
+Mission Status: Victory
+
+Objectives Status:
+Objective 1: Completed
+Objective 2: Completed
+Objective 3: Completed
+Objective 4: Completed
+Objective 5: Completed
+Objective 6: Completed
+Objective 7: Completed
+Objective 8: Completed
+Objective 9: Completed
+Objective 10: Completed
+Objective 11: Completed
+Objective 12: Completed
+Objective 13: Completed
+Objective 14: Completed
+Objective 15: Completed
+Objective 16: Not Completed
